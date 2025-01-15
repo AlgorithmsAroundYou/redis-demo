@@ -1,0 +1,60 @@
+redis-cli -u redis://default:X5hpEvBuHIvpQzOZk1tYOxFR5OLJdkAS@redis-10875.c251.east-us-mz.azure.redns.redis-cloud.com:10875
+
+import redis.clients.jedis.UnifiedJedis;
+import redis.clients.jedis.DefaultJedisClientConfig;
+import redis.clients.jedis.HostAndPort;
+import redis.clients.jedis.JedisClientConfig;
+
+public class ConnectBasicExample {
+    public void run() {
+        JedisClientConfig config = DefaultJedisClientConfig.builder()
+                .user("default")
+                .password("X5hpEvBuHIvpQzOZk1tYOxFR5OLJdkAS")
+                .build();
+
+        UnifiedJedis jedis = new UnifiedJedis(
+            new HostAndPort("redis-10875.c251.east-us-mz.azure.redns.redis-cloud.com", 10875),
+            config
+        );
+
+        String res1 = jedis.set("foo", "bar");
+        System.out.println(res1); // >>> OK
+
+        String res2 = jedis.get("foo");
+        System.out.println(res2); // >>> bar
+
+        jedis.close();
+    }
+}
+
+
+import io.lettuce.core.*;
+import io.lettuce.core.api.StatefulRedisConnection;
+import io.lettuce.core.api.sync.RedisCommands;
+
+public class ConnectBasicTest {
+    public void connectBasic() {
+        RedisURI uri = RedisURI.Builder
+                .redis("redis-10875.c251.east-us-mz.azure.redns.redis-cloud.com", 10875)
+                .withAuthentication("default", "X5hpEvBuHIvpQzOZk1tYOxFR5OLJdkAS")
+                .build();
+        RedisClient client = RedisClient.create(uri);
+        StatefulRedisConnection<String, String> connection = client.connect();
+        RedisCommands<String, String> commands = connection.sync();
+
+        commands.set("foo", "bar");
+        String result = commands.get("foo");
+        System.out.println(result); // >>> bar
+
+        connection.close();
+
+        client.shutdown();
+    }
+}
+
+
+public endpoint: redis-10875.c251.east-us-mz.azure.redns.redis-cloud.com:10875
+username: 
+Default user
+On(Username: "default")
+password: X5hpEvBuHIvpQzOZk1tYOxFR5OLJdkAS
